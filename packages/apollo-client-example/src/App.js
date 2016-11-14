@@ -16,7 +16,7 @@ const client = new ApolloClient();
 const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
 
 const currentPageNumberReducer = handleActions({
-  [actions.updatePage]: (state, { payload }) => state + payload,
+  [actions.updatePage]: (state, { payload }) => Math.max(state + payload, 1),
 }, 1);
 
 const rootReducer = combineReducers({
