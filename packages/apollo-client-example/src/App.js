@@ -13,7 +13,7 @@ import './App.css';
 
 const client = new ApolloClient();
 
-const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
+const actions = createActions('UPDATE_PAGE');
 
 const currentPageNumberReducer = handleActions({
   [actions.updatePage]: (state, { payload }) => Math.max(state + payload, 1),
