@@ -48,23 +48,23 @@ AuthorModel.hasMany(PostModel);
 PostModel.belongsTo(AuthorModel);
 
 casual.seed(123);
-db.sync({ force: true }).then(()=> {
+db.sync({ force: true }).then(() => {
   _.times(10, ()=> {
     return AuthorModel.create({
       firstName: casual.first_name,
       lastName: casual.last_name,
     }).then(author => {
-      return _.range(100).map(() =>
-          author.createPost({
-            title: casual.words(3),
-            text: casual.sentences(3),
-            tags: casual.words(3).split(' ').join(','),
-          }).then( (post) => {
-            return View.update({ postId: post.id }, { views: casual.integer(0,100)}, { upsert: true })
-              .then( (res) => console.log(res))
-              .catch( (err) => console.log(err));
-          })
-       );
+      return Promise.all(_.range(100).map(() =>
+        author.createPost({
+          title: casual.words(3),
+          text: casual.sentences(3),
+          tags: casual.words(3).split(' ').join(','),
+        }).then( (post) => {
+          return View.update({ postId: post.id }, { views: casual.integer(0,100)}, { upsert: true })
+            //.then( (res) => console.log(res))
+            //.catch( (err) => console.log(err));
+        })
+      ));
     });
   });
 });

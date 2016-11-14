@@ -2,61 +2,130 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { connect } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import Lokka from 'lokka';
+import Transport from 'lokka-transport-http';
+import thunk from 'redux-thunk';
+import { createActions, handleActions } from 'redux-actions';
 
-const counter = (state = 0, action) => {
-  switch (action.type) {
-    case 'INCREMENT':
-      return state + 1;
-    case 'DECREMENT':
-      return state - 1;
-    default:
-      return state;
-  }
-}
+const client = new Lokka({
+  transport: new Transport('/graphql'),
+});
 
-const Counter = ({
+const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
+
+const currentPageNumberReducer = handleActions({
+  [actions.updatePage]: (state, { payload }) => state + payload,
+}, 1);
+
+const postsByPageReducer = handleActions({
+  [actions.posts]: (
+    state,
+    { payload: { page, response } }
+  ) => ({
+    ...state,
+    [page]: response,
+  }),
+}, {});
+
+const errorsReducer = handleActions({
+  [actions.postErrors]: (state, { payload }) => payload,
+  [actions.posts]: () => [],
+}, []);
+
+
+const rootReducer = combineReducers({
+  currentPageNumber: currentPageNumberReducer,
+  postsByPage: postsByPageReducer,
+  errors: errorsReducer,
+});
+
+const Posts = ({
   value,
+  errors,
+  posts,
   onIncrement,
-  onDecrement
+  onDecrement,
 }) => (
   <div>
     <h1>{value}</h1>
     <button onClick={onIncrement}>+</button>
     <button onClick={onDecrement}>-</button>
+    {errors.map(error => <pre key={error} >{error}</pre>)}
+    {posts.map(({ title, id }) => <p key={id} >{title}</p>)}
   </div>
 );
 
-const mapStateToProps = (state) => {
-  return {
-    value: state
+const mapStateToProps = state => ({
+  value: state.currentPageNumber,
+  errors: state.errors,
+  posts: state.postsByPage[state.currentPageNumber] || [],
+});
+
+const pageSize = 5;
+
+function fetchPosts(pageOffset) {
+  return (dispatch, getState) => {
+    dispatch(actions.updatePage(pageOffset));
+
+    const { currentPageNumber, postsByPage } = getState();
+
+    const posts = postsByPage[currentPageNumber];
+
+    if (!posts) {
+      const offset = (currentPageNumber - 1) * pageSize;
+
+      client.query(`query getPosts($offset: Int, $limit: Int){
+        authors(limit:1){
+          firstName
+          lastName,
+          posts(offset: $offset, limit: $limit){
+            id
+            title
+            text
+          }
+        }
+      }`, { offset, limit: pageSize }).then(
+        ({ authors: [{ posts: response }] }) => dispatch(actions.posts({ page: currentPageNumber, response })),
+        (error) => {
+          const { rawError } = error;
+          if (rawError) {
+            dispatch(actions.postErrors(rawError.map(({ message }) => message)));
+          } else {
+            dispatch(actions.postErrors([error.message]));
+          }
+        },
+      );
+    }
   };
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onIncrement: () => {
-      dispatch({
-        type: 'INCREMENT'
-      })
-    },
-    onDecrement: () => {
-      dispatch({
-        type: 'DECREMENT'
-      })
-    }
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  onIncrement() {
+    dispatch(fetchPosts(1));
+  },
+  onDecrement() {
+    dispatch(fetchPosts(-1));
+  },
+});
 
-const CounterContainer = connect(
+const PostsContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
-)(Counter);
+  mapDispatchToProps,
+)(Posts);
 
-/*
- * Let's create a store.
- */
-const store = createStore(counter);
+const debugStoreEnhancer = (
+  typeof window === 'object' && window.devToolsExtension
+) ? window.devToolsExtension() : f => f;
+
+const enhancers = compose(
+  applyMiddleware(thunk),
+  debugStoreEnhancer,
+);
+
+const store = createStore(rootReducer, enhancers);
+
+store.dispatch(fetchPosts(0));
 
 class App extends Component {
   render() {
@@ -69,7 +138,7 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <CounterContainer store={store} />,
+        <PostsContainer store={store} />
       </div>
     );
   }
