@@ -17,20 +17,21 @@ const resolveFunctions = {
     },
     authors(_, { limit, offset }) {
       return Author.findAll({ limit, offset });
+    },
+    relayAuthors(_, { limit, offset }) {
+      return Author.findAll({ limit, offset });
     }
   },
   RootMutation: {
     createAuthor: (root, args) => { return Author.create(args); },
     createPost: (root, { authorId, tags, title, text }) => {
       return Author.findOne({ where: { id: authorId } }).then( (author) => {
-        console.log('found', author);
         return author.createPost( { tags: tags.join(','), title, text });
       });
     },
   },
   Author: {
     posts(author, args){
-      console.log('###', author, args);
       return author.getPosts(args);
     },
   },
@@ -46,6 +47,11 @@ const resolveFunctions = {
         setTimeout( () => reject('MongoDB timeout when fetching field views (timeout is 500ms)'), 500);
         View.findOne({ postId: post.id }).then( (res) => resolve(res.views) );
       })
+    }
+  },
+  AuthorResult: {
+    authors(authors, args) {
+      return authors;
     }
   }
 }

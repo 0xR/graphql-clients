@@ -27,7 +27,7 @@ module.exports = {
   // We don't use source maps here because they can be confusing:
   // https://github.com/facebookincubator/create-react-app/issues/343#issuecomment-237241875
   // You may want 'cheap-module-source-map' instead if you prefer source maps.
-  devtool: 'eval',
+  devtool: 'sourcemap',
   // These are the "entry points" to our application.
   // This means they will be the "root" imports that are included in JS bundle.
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
@@ -81,7 +81,7 @@ module.exports = {
       'react-native': 'react-native-web'
     }
   },
-  
+
   module: {
     // First, run the linter.
     // It's important to do this before Babel processes the JS.
@@ -97,17 +97,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         include: paths.appSrc,
-        loader: 'babel',
-        query: {
-          
-          // This is a feature of `babel-loader` for webpack (not Babel itself).
-          // It enables caching results in ./node_modules/.cache/react-scripts/
-          // directory for faster rebuilds. We use findCacheDir() because of:
-          // https://github.com/facebookincubator/create-react-app/issues/483
-          cacheDirectory: findCacheDir({
-            name: 'react-scripts'
-          })
-        }
+        loader: 'babel'
       },
       // "postcss" loader applies autoprefixer to our CSS.
       // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -146,7 +136,7 @@ module.exports = {
       }
     ]
   },
-  
+
   // We use PostCSS for autoprefixing only.
   postcss: function() {
     return [

@@ -49,7 +49,7 @@ PostModel.belongsTo(AuthorModel);
 
 casual.seed(123);
 db.sync({ force: true }).then(() => {
-  _.times(10, ()=> {
+  _.times(1, ()=> {
     return AuthorModel.create({
       firstName: casual.first_name,
       lastName: casual.last_name,
