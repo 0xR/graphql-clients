@@ -45,6 +45,16 @@ const Posts = ({
   </div>
 );
 
+Posts.fragments = {
+  posts: `
+  fragment PostList on Post {
+    id
+    title
+    text
+  }
+  `,
+};
+
 const mapStateToProps = state => ({
   pageNumber: state.currentPageNumber,
 });
@@ -66,12 +76,11 @@ const postQuery = gql`query getPosts($offset: Int, $limit: Int){
     firstName
     lastName,
     posts(offset: $offset, limit: $limit){
-      id
-      title
-      text
+      ...PostList
     }
   }
-}`;
+}
+${Posts.fragments.posts}`;
 
 const PostsContainer = compose(
   connect(mapStateToProps, mapDispatchToProps),
