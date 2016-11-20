@@ -3,7 +3,20 @@ import logo from './logo.svg';
 import './App.css';
 import Relay from 'react-relay';
 
+const pageSize = 5;
+
 class App extends Component {
+  constructor(props) {
+    super();
+
+    this.onIncrement = () => this.props.relay.setVariables({
+      offset: this.props.relay.variables.offset + pageSize
+    });
+
+    this.onDecrement = () => this.props.relay.setVariables({
+      offset: this.props.relay.variables.offset - pageSize
+    });
+  }
   render() {
     const {
       posts: { authors: [{ posts }] },
@@ -14,6 +27,8 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React</h2>
         </div>
+        <button onClick={this.onIncrement}>+</button>
+        <button onClick={this.onDecrement}>-</button>
         <p className="App-intro">
         </p>
         {posts && posts.map(({ title, id }) => <p key={id} >{title}</p>)}
@@ -25,7 +40,7 @@ class App extends Component {
 export default Relay.createContainer(App, {
   initialVariables: {
     offset: 0,
-    limit: 10,
+    limit: pageSize,
   },
   fragments: {
     posts: () => Relay.QL`
@@ -41,5 +56,5 @@ export default Relay.createContainer(App, {
       }
     }
     `,
-  },
+  }
 });
