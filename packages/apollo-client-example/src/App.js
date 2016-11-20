@@ -98,6 +98,8 @@ const enhancers = compose(
 
 const store = createStore(rootReducer, enhancers);
 
+client.setStore(store);
+
 class App extends Component {
   render() {
     return (
@@ -116,7 +118,7 @@ class App extends Component {
 }
 
 export default () => (
-  <ApolloProvider store={store} client={client}>
+  <ApolloProvider client={client}>
     <App />
   </ApolloProvider>
 );
