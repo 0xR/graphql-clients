@@ -56,6 +56,15 @@ const Posts = ({
   </div>
 );
 
+Posts.fragments = {
+  posts: client.createFragment(`
+    fragment on Post {
+      id
+      title
+      text
+    }
+  `)
+}
 const mapStateToProps = state => ({
   value: state.currentPageNumber,
   errors: state.errors,
@@ -80,9 +89,7 @@ function fetchPosts(pageOffset) {
           firstName
           lastName,
           posts(offset: $offset, limit: $limit){
-            id
-            title
-            text
+            ...${Posts.fragments.posts}
           }
         }
       }`, { offset, limit: pageSize }).then(
