@@ -1,13 +1,16 @@
 const typeDefinitions = `
-type Author {
-  id: String! # the ! means that every author object _must_ have an id
+interface Node {
+  id: ID!
+}
+type Author implements Node {
+  id: ID! # the ! means that every author object _must_ have an id
   firstName: String
   lastName: String
   posts(offset: Int, limit: Int): [Post]
 }
 
-type Post {
-  id: String!
+type Post implements Node {
+  id: ID!
   tags: [String]
   title: String
   text: String
@@ -21,6 +24,7 @@ type RootQuery {
   authors(offset: Int, limit: Int): [Author]
   relayAuthors(offset: Int, limit: Int): AuthorResult
   fortuneCookie: String
+  node(id: ID!): Node
 }
 
 type AuthorResult {
@@ -38,7 +42,7 @@ type RootMutation {
     tags: [String!]!
     title: String!
     text: String!
-    authorId: String!
+    authorId: ID!
   ): Post
 }
 

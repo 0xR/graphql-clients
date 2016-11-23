@@ -1,5 +1,11 @@
 import { Author, Post, View, FortuneCookie } from './connectors';
 
+function addGlobalId(type) {
+  return (instance) => {
+    instance.id = type + instance.id;
+  }
+}
+
 const resolveFunctions = {
   RootQuery: {
     author(_, { firstName, lastName }){
@@ -20,6 +26,14 @@ const resolveFunctions = {
     },
     relayAuthors(_, { limit, offset }) {
       return Author.findAll({ limit, offset });
+    },
+    node(_, { id }, info) {
+      const [type, dbid] = id.split(';');
+      if(type === 'author') {
+        return Author.findById(dbid).then(a => {console.log(a.id); return a});
+      } else if (type === 'post') {
+        return Post.findById(dbid);
+      }
     }
   },
   RootMutation: {
@@ -52,6 +66,15 @@ const resolveFunctions = {
   AuthorResult: {
     authors(authors, args) {
       return authors;
+    }
+  },
+  Node: {
+    __resolveType(root, context, info) {
+      if (root.Model.name === 'author') {
+         return info.schema.getType('Author');
+      } else if (root.Model.name === 'post') {
+         return info.schema.getType('Post');
+      }
     }
   }
 }

@@ -9,6 +9,26 @@ const db = new Sequelize('blog', null, null, {
   storage: './blog.sqlite'
 });
 
+function addId(instance) {
+  if(typeof instance.id === 'number') {
+      const prop = Object.getPrototypeOf(instance)
+      const originalId = Object.getOwnPropertyDescriptor(prop, 'id').get;
+      Object.defineProperty(prop, 'id', {
+        get() {
+          return `${instance.Model.name};${originalId.apply(this)}`;
+        }
+      });
+    }
+}
+
+const afterFind = (findResult) => {
+  if(Array.isArray(findResult)) {
+    findResult.forEach(addId);
+  } else {
+    addId(findResult)
+  }
+}
+
 const AuthorModel = db.define('author', {
   firstName: {
     type: Sequelize.STRING,
@@ -16,7 +36,13 @@ const AuthorModel = db.define('author', {
   lastName: {
     type: Sequelize.STRING,
   },
+}, {
+  hooks: {
+    afterFind
+  }
 });
+
+AuthorModel
 
 const PostModel = db.define('post', {
   title: {
@@ -27,6 +53,10 @@ const PostModel = db.define('post', {
   },
   tags: {
     type: Sequelize.STRING,
+  }
+}, {
+  hooks: {
+    afterFind
   }
 });
 
