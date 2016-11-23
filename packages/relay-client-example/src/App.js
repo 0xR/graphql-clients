@@ -9,13 +9,24 @@ class Posts extends Component {
   constructor(props) {
     super();
 
+
+    const onReadyStateChange = ({ done }) => {
+      const { loading } = this.state;
+      // optimization
+      if (loading === done) {
+        this.setState({ loading: !done });
+      }
+    }
+
     this.onIncrement = () => this.props.relay.setVariables({
       offset: this.props.relay.variables.offset + pageSize
-    });
+    }, onReadyStateChange);
 
     this.onDecrement = () => this.props.relay.setVariables({
       offset: this.props.relay.variables.offset - pageSize
-    });
+    }, onReadyStateChange);
+
+    this.state = { loading: false };
   }
 
   render() {
@@ -24,12 +35,15 @@ class Posts extends Component {
       relay: { variables }
     } = this.props;
 
+    const { loading } = this.state;
+
     return (
       <div>
         <h1>{variables.offset / pageSize + 1}</h1>
         <button onClick={this.onIncrement}>+</button>
         <button onClick={this.onDecrement}>-</button>
-        {posts.map(({ title, id }) => <p key={id} >{title}</p>)}
+        <p>{loading ? 'loading...' : null}</p>
+        {posts.map(({ title, __dataID__: id }) => <p key={id} >{title}</p>)}
       </div>
     );
   }

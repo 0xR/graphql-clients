@@ -30,6 +30,7 @@ module.exports = {
   externals: {
     react: true,
     'react-dom': true,
+    'graphql-tag': true,
     'babel-runtime/core-js/array/from': true,
     'babel-runtime/core-js/json/stringify': true,
     'babel-runtime/core-js/object/assign': true,

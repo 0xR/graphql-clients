@@ -33,17 +33,19 @@ const Posts = ({
   pageNumber,
   onIncrement,
   onDecrement,
-}) => (
+}) => {
+  console.log('redner');
+  return (
   <div>
-    <h1>{pageNumber}</h1>
-    <button onClick={onIncrement}>+</button>
-    <button onClick={onDecrement}>-</button>
-    <p>{loading ? 'loading...' : null}</p>
-    {networkError && <pre>{networkError.message}</pre>}
-    {graphQLErrors && graphQLErrors.map(({ message }) => <pre key={message} >{message}</pre>)}
-    {posts && posts.map(({ title, id }) => <p key={id} >{title}</p>)}
+  <h1>{pageNumber}</h1>
+  <button onClick={onIncrement}>+</button>
+  <button onClick={onDecrement}>-</button>
+  <p>{loading ? 'loading...' : null}</p>
+  {networkError && <pre>{networkError.message}</pre>}
+  {graphQLErrors && graphQLErrors.map(({ message }) => <pre key={message} >{message}</pre>)}
+  {posts && posts.map(({ title, id }) => <p key={id} >{title}</p>)}
   </div>
-);
+) };
 
 Posts.fragments = {
   posts: gql`
