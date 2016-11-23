@@ -75,10 +75,10 @@ function fetchPosts(pageOffset) {
     if (!posts) {
       const offset = (currentPageNumber - 1) * pageSize;
 
-      client.query(`query getPosts($offset: Int, $limit: Int){
+      client.query(gql`query getPosts($offset: Int, $limit: Int){
         authors(limit:1){
           firstName
-          lastName,
+          lastName
           posts(offset: $offset, limit: $limit){
             id
             title
