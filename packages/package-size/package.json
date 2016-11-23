@@ -1,0 +1,25 @@
+{
+  "name": "package-size",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "rm -f build/*",
+    "build": "webpack"
+  },
+  "dependencies": {
+    "apollo": "^0.2.2",
+    "apollo-client": "^0.5.6",
+    "graphql-tag": "^1.0.0",
+    "lokka": "^1.7.0",
+    "lokka-transport-http": "^1.6.1",
+    "react-apollo": "^0.6.0",
+    "react-relay": "^0.9.3",
+    "relay": "^0.8.0-1",
+    "webpack": "^1.13.3"
+  },
+  "devDependencies": {
+    "ignore-loader": "^0.1.2",
+    "json-loader": "^0.5.4"
+  }
+}

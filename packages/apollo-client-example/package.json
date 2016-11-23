@@ -7,19 +7,19 @@
     "eslint": "^3.10.0",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-jsx-a11y": "^3.0.1",
     "eslint-plugin-react": "^6.6.0",
     "react-scripts": "0.7.0"
   },
   "dependencies": {
     "apollo-client": "^0.5.2",
-    "graphql-tag": "^0.1.16",
+    "graphql-tag": "^1.0.0",
     "react": "^15.3.2",
     "react-apollo": "^0.6.0",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
     "redux": "^3.6.0",
-    "redux-actions": "^0.13.0",
+    "redux-actions": "^1.0.1",
     "redux-thunk": "^2.1.0"
   },
   "proxy": "http://localhost:8080",

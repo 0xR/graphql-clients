@@ -46,7 +46,7 @@ const Posts = ({
 );
 
 Posts.fragments = {
-  posts: `
+  posts: gql`
   fragment PostList on Post {
     id
     title
@@ -54,6 +54,7 @@ Posts.fragments = {
   }
   `,
 };
+console.log(Posts.fragments.posts)
 
 const mapStateToProps = state => ({
   pageNumber: state.currentPageNumber,
