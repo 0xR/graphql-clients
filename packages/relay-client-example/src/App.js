@@ -20,12 +20,13 @@ class Posts extends Component {
 
   render() {
     const {
-      posts,
-    } = this.props.postsOnAuthor;
+      postsOnAuthor: { posts },
+      relay: { variables }
+    } = this.props;
 
     return (
       <div>
-        <h1>todo page</h1>
+        <h1>{variables.offset / pageSize + 1}</h1>
         <button onClick={this.onIncrement}>+</button>
         <button onClick={this.onDecrement}>-</button>
         {posts.map(({ title, id }) => <p key={id} >{title}</p>)}
@@ -54,7 +55,6 @@ const PostsContainer = Relay.createContainer(Posts, {
 class App extends Component {
   render() {
     const { posts: { authors } } = this.props;
-    console.log(this.props, authors);
     return (
       <div className="App">
         <div className="App-header">
