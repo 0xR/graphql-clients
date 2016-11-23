@@ -3,14 +3,30 @@ import logo from './logo.svg';
 import './App.css';
 import { connect } from 'react-redux';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
-import Lokka from 'lokka';
-import Transport from 'lokka-transport-http';
 import thunk from 'redux-thunk';
 import { createActions, handleActions } from 'redux-actions';
 
-const client = new Lokka({
-  transport: new Transport('/graphql'),
-});
+function fetchGraphql(query, variables) {
+  return fetch('/graphql', {
+    method: 'post',
+    body: JSON.stringify({
+      query,
+      variables
+    }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).then(response => {
+    if (response.ok) {
+      return response.json();
+    }
+    return response.json().then((json) => {
+      throw json;
+    });
+  }).then(json => json.data);
+
+}
 
 const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
 
@@ -75,7 +91,7 @@ function fetchPosts(pageOffset) {
     if (!posts) {
       const offset = (currentPageNumber - 1) * pageSize;
 
-      client.query(gql`query getPosts($offset: Int, $limit: Int){
+      fetchGraphql(gql`query getPosts($offset: Int, $limit: Int){
         authors(limit:1){
           firstName
           lastName
@@ -87,13 +103,8 @@ function fetchPosts(pageOffset) {
         }
       }`, { offset, limit: pageSize }).then(
         ({ authors: [{ posts: response }] }) => dispatch(actions.posts({ page: currentPageNumber, response })),
-        (error) => {
-          const { rawError } = error;
-          if (rawError) {
-            dispatch(actions.postErrors(rawError.map(({ message }) => message)));
-          } else {
-            dispatch(actions.postErrors([error.message]));
-          }
+        ({ errors }) => {
+          dispatch(actions.postErrors(errors.map(({ message }) => message)));
         },
       );
     }
