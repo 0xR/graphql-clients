@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "echo Not runnable",
     "prebuild": "rm -f build/*",
     "build": "webpack"
   },
