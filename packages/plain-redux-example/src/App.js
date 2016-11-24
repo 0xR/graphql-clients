@@ -29,6 +29,13 @@ function fetchGraphql(query, variables) {
 
 const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
 
+const loadingReducer = handleActions({
+  [actions.updatePage]: state => state + 1,
+  [actions.posts]: state => state - 1,
+  [actions.postErrors]: state => state - 1,
+}, 0);
+
+
 const currentPageNumberReducer = handleActions({
   [actions.updatePage]: (state, { payload }) => Math.max(state + payload, 1),
 }, 1);
@@ -53,12 +60,14 @@ const rootReducer = combineReducers({
   currentPageNumber: currentPageNumberReducer,
   postsByPage: postsByPageReducer,
   errors: errorsReducer,
+  loading: loadingReducer,
 });
 
 const Posts = ({
   value,
   errors,
   posts,
+  loading,
   onIncrement,
   onDecrement,
 }) => (
@@ -66,6 +75,7 @@ const Posts = ({
     <h1>{value}</h1>
     <button onClick={onIncrement}>+</button>
     <button onClick={onDecrement}>-</button>
+    <p>{loading ? 'loading...' : null}</p>
     {errors.map(error => <pre key={error} >{error}</pre>)}
     {posts.map(({ title, id }) => <p key={id} >{title}</p>)}
   </div>
@@ -75,6 +85,7 @@ const mapStateToProps = state => ({
   value: state.currentPageNumber,
   errors: state.errors,
   posts: state.postsByPage[state.currentPageNumber] || [],
+  loading: state.loading !== 0,
 });
 
 const pageSize = 5;
@@ -90,17 +101,19 @@ function fetchPosts(pageOffset) {
     if (!posts) {
       const offset = (currentPageNumber - 1) * pageSize;
 
-      fetchGraphql(gql`query getPosts($offset: Int, $limit: Int){
-        authors(limit:1){
-          firstName
-          lastName
-          posts(offset: $offset, limit: $limit){
-            id
-            title
-            text
+      fetchGraphql(gql`
+        query getPosts($offset: Int, $limit: Int){
+          authors(limit:1){
+            firstName
+            lastName
+            posts(offset: $offset, limit: $limit){
+              id
+              title
+              text
+            }
           }
         }
-      }`, { offset, limit: pageSize }).then(
+      `, { offset, limit: pageSize }).then(
         ({ authors: [{ posts: response }] }) => dispatch(actions.posts({ page: currentPageNumber, response })),
         ({ errors }) => {
           dispatch(actions.postErrors(errors.map(({ message }) => message)));

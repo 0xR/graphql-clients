@@ -13,6 +13,13 @@ const client = new Lokka({
 
 const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
 
+const loadingReducer = handleActions({
+  [actions.updatePage]: state => state + 1,
+  [actions.posts]: state => state - 1,
+  [actions.postErrors]: state => state - 1,
+}, 0);
+
+
 const currentPageNumberReducer = handleActions({
   [actions.updatePage]: (state, { payload }) => Math.max(state + payload, 1),
 }, 1);
@@ -37,6 +44,7 @@ const rootReducer = combineReducers({
   currentPageNumber: currentPageNumberReducer,
   postsByPage: postsByPageReducer,
   errors: errorsReducer,
+  loading: loadingReducer,
 });
 
 const Posts = ({
@@ -45,11 +53,13 @@ const Posts = ({
   posts,
   onIncrement,
   onDecrement,
+  loading,
 }) => (
   <div>
     <h1>{value}</h1>
     <button onClick={onIncrement}>+</button>
     <button onClick={onDecrement}>-</button>
+    <p>{loading ? 'loading...' : null}</p>
     {errors.map(error => <pre key={error} >{error}</pre>)}
     {posts.map(({ title, id }) => <p key={id} >{title}</p>)}
   </div>
@@ -68,6 +78,7 @@ const mapStateToProps = state => ({
   value: state.currentPageNumber,
   errors: state.errors,
   posts: state.postsByPage[state.currentPageNumber] || [],
+  loading: state.loading !== 0,
 });
 
 const pageSize = 5;
