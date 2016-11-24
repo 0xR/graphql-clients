@@ -8,7 +8,6 @@ import { ApolloProvider, graphql } from 'react-apollo';
 import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 
-import logo from './logo.svg';
 import './App.css';
 
 const client = new ApolloClient();
