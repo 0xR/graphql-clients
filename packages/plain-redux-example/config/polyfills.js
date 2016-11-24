@@ -13,18 +13,21 @@ require('whatwg-fetch');
 // It will use the native implementation if it's present and isn't buggy.
 Object.assign = require('object-assign');
 
-global.gql = (literals, ...substitutions) => {
-    let result = "";
+global.gql = function (literals) {
+    for (var _len = arguments.length, substitutions = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        substitutions[_key - 1] = arguments[_key];
+    }
+
+    var result = "";
 
     // run the loop only for the substitution count
-    for (let i = 0; i < substitutions.length; i++) {
-        result += literals[i];
-        result += substitutions[i];
+    for (var i = 1; i < arguments.length; i++) {
+        result += literals[i - 1];
+        result += arguments[i];
     }
 
     // add the last literal
     result += literals[literals.length - 1];
 
     return result;
-}
-
+};
