@@ -55,7 +55,6 @@ Posts.fragments = {
   }
   `,
 };
-console.log(Posts.fragments.posts)
 
 const mapStateToProps = state => ({
   pageNumber: state.currentPageNumber,
