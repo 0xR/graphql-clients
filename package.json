@@ -1,8 +1,15 @@
 {
   "scripts": {
-    "start": "lerna run start"
+    "start:lokka": "cd ./packages/lokka-client-example; npm run start",
+    "start:plain": "cd ./packages/plain-redux-example; npm run start",
+    "start:apollo": "cd ./packages/apollo-client-example; npm run start",
+    "start:relay": "cd ./packages/relay-client-example; npm run start",
+    "start:server": "cd ./packages/apollo-server-tutorial; npm run start",
+    "start": "npm-run-all -p start:*",
+    "postinstall": "lerna bootstrap"
   },
   "devDependencies": {
-    "lerna": "2.0.0-beta.30"
+    "lerna": "2.0.0-beta.30",
+    "npm-run-all": "^3.1.1"
   }
 }
