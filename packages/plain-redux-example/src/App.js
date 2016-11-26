@@ -27,10 +27,10 @@ function fetchGraphql(query, variables) {
 
 }
 
-const actions = createActions('UPDATE_PAGE', 'POSTS', 'POST_ERRORS');
+const actions = createActions('UPDATE_PAGE', 'FETCHING_POSTS', 'POSTS', 'POST_ERRORS');
 
 const loadingReducer = handleActions({
-  [actions.updatePage]: state => state + 1,
+  [actions.fetchingPosts]: state => state + 1,
   [actions.posts]: state => state - 1,
   [actions.postErrors]: state => state - 1,
 }, 0);
@@ -99,6 +99,7 @@ function fetchPosts(pageOffset) {
     const posts = postsByPage[currentPageNumber];
 
     if (!posts) {
+      dispatch(actions.fetchingPosts());
       const offset = (currentPageNumber - 1) * pageSize;
 
       fetchGraphql(gql`
