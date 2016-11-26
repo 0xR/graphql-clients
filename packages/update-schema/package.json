@@ -4,8 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "bin": {
-    "start": "echo Not runnable",
     "updateschema": "./index.js"
+  },
+  "scripts": {
+    "start": "echo Not runnable"
   },
   "dependencies": {
     "apollo-server-tutorial": "1.0.0",

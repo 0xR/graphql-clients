@@ -1,7 +1,6 @@
 {
   "name": "relay-client-example",
   "version": "0.1.0",
-  "private": true,
   "devDependencies": {
     "autoprefixer": "6.5.1",
     "apollo-server-tutorial": "1.0.0",
